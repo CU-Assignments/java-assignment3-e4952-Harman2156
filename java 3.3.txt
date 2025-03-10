@@ -1,0 +1,70 @@
+import java.util.*;
+
+class CourseFullException extends Exception {
+    public CourseFullException(String message) {
+        super(message);
+    }
+}
+
+class PrerequisiteNotMetException extends Exception {
+    public PrerequisiteNotMetException(String message) {
+        super(message);
+    }
+}
+
+class Course {
+    private String name;
+    private String prerequisite;
+    private int maxEnrollment;
+    private int enrolledStudents;
+
+    public Course(String name, String prerequisite, int maxEnrollment) {
+        this.name = name;
+        this.prerequisite = prerequisite;
+        this.maxEnrollment = maxEnrollment;
+        this.enrolledStudents = 0;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPrerequisite() {
+        return prerequisite;
+    }
+
+    public void enrollStudent(Set<String> completedCourses) throws CourseFullException, PrerequisiteNotMetException {
+        if (enrolledStudents >= maxEnrollment) {
+            throw new CourseFullException("Error: CourseFullException - " + name + " is already full.");
+        }
+        if (prerequisite != null && !prerequisite.isEmpty() && !completedCourses.contains(prerequisite)) {
+            throw new PrerequisiteNotMetException("Error: PrerequisiteNotMetException - Complete " + prerequisite + " before enrolling in " + name + ".");
+        }
+        enrolledStudents++;
+        System.out.println("Successfully enrolled in " + name);
+    }
+}
+
+public class UniversityEnrollment {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        Course advancedJava = new Course("Advanced Java", "Core Java", 2);
+        Set<String> completedCourses = new HashSet<>();
+        
+        System.out.print("Have you completed Core Java? (yes/no): ");
+        String prerequisiteStatus = scanner.nextLine();
+        if (prerequisiteStatus.equalsIgnoreCase("yes")) {
+            completedCourses.add("Core Java");
+        }
+        
+        try {
+            System.out.print("Enroll in Course: Advanced Java\n");
+            advancedJava.enrollStudent(completedCourses);
+        } catch (CourseFullException | PrerequisiteNotMetException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            scanner.close();
+        }
+    }
+}
